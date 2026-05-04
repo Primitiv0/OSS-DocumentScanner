@@ -113,6 +113,9 @@ export class SyncService extends BaseWorkerHandler<SyncWorker> {
             if (eventData.doc) {
                 eventData.doc = OCRDocument.fromJSON(eventData.doc);
             }
+            if (eventData.changedProps) {
+                eventData.changedProps = new Set(eventData.changedProps);
+            }
             if (eventData.documents) {
                 eventData.documents = eventData.documents.map((d) => OCRDocument.fromJSON(d));
             }

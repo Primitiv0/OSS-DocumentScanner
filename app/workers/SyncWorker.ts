@@ -104,11 +104,14 @@ export default class SyncWorker extends BaseWorker {
         if (!documentsService) {
             documentsService = new DocumentsService();
             DEV_LOG && console.warn('SyncWorker', 'handleStart', documentsService.id, event.data.nativeData.db);
-            documentsService.notify = (e) => {
+            documentsService.notify = (e: any) => {
                 if (e.eventName === 'started') {
                     return;
                 }
                 const { object, ...other } = e;
+                if (other.changedProps) {
+                    other.changedProps = [...other.changedProps];
+                }
                 this.notify({ ...other, target: 'documentsService', object: object === this ? undefined : object });
             };
             setDocumentsService(documentsService);
