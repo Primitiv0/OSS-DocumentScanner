@@ -360,7 +360,7 @@
             } else {
                 const item = documents?.getItem(index);
                 if (item) {
-                    DEV_LOG && console.log('onDocumentUpdated1', [...event.changedProps], sortOrder, event.changedProps.has('name'), sortOrder.startsWith('name'));
+                    // DEV_LOG && console.log('onDocumentUpdated1', [...event.changedProps], sortOrder, event.changedProps.has('name'), sortOrder.startsWith('name'));
                     if (event.changedProps.has('favorite') || (event.changedProps.has('name') && sortOrder.startsWith('name'))) {
                         refresh();
                     } else {
