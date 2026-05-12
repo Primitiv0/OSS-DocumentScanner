@@ -90,9 +90,15 @@ export class WebdavDataSyncService extends BaseDataSyncService {
     }
 
     override async putFileContents(relativePath: string, localFilePath: string, options?) {
+        if (!relativePath.startsWith(this.remoteFolder)) {
+            relativePath = path.join(this.remoteFolder, relativePath);
+        }
         return this.client.putFileContents(relativePath, File.fromPath(localFilePath), options);
     }
     override putFileContentsFromData(relativePath: string, data: string, options?) {
+        if (!relativePath.startsWith(this.remoteFolder)) {
+            relativePath = path.join(this.remoteFolder, relativePath);
+        }
         return this.client.putFileContents(relativePath, data, options);
     }
     override async deleteFile(relativePath: string) {
