@@ -12,7 +12,7 @@ import type { FileStat } from '~/webdav';
 export interface PaperlessNgxPDFSyncServiceOptions extends BasePDFSyncServiceOptions, PaperlessNgxSyncOptions {}
 
 /** Key in doc.extra where the linked Paperless document ID is stored. */
-const EXTRA_PAPERLESS_ID_KEY = 'paperless_pdf_id';
+export const EXTRA_PAPERLESS_ID_KEY = 'paperless_pdf_id';
 
 /** Polling interval in milliseconds. */
 const POLL_INTERVAL_MS = 2000;
