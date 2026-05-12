@@ -42,14 +42,14 @@ jobs:
   #   secrets: inherit
 
   typings-documentscanner-ios:
-    uses: Akylas/app-tools/.github/workflows/generate_typings_ios.yml@main
+    uses: ossappscollective/app-tools/.github/workflows/generate_typings_ios.yml@main
     if: github.event.inputs.ios == 'true' && github.event.inputs.documentscanner == 'true'
     with:
       flavor: documentscanner
     secrets: inherit
     
   typings-cardwallet-ios:
-    uses: Akylas/app-tools/.github/workflows/generate_typings_ios.yml@main
+    uses: ossappscollective/app-tools/.github/workflows/generate_typings_ios.yml@main
     if: github.event.inputs.ios == 'true' && github.event.inputs.cardwallet == 'true'
     with:
       flavor: cardwallet
