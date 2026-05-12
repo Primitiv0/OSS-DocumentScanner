@@ -498,5 +498,15 @@
   "debugging": "debugging",
   "debugging_settings_desc": "debugging settings",
   "crash_report": "enable crash reports",
-  "crash_report_desc": "when enabled crash reports will be sent to a private instance data of Sentry. No data shared, data regularly deleted. Only used for debugging"
+  "crash_report_desc": "when enabled crash reports will be sent to a private instance data of Sentry. No data shared, data regularly deleted. Only used for debugging",
+  "opacity": "opacity",
+  "red": "red",
+  "green": "green",
+  "blue": "blue",
+  "grid": "grid",
+  "spectrum": "spectrum",
+  "sliders": "slider",
+  "select": "select",
+  "color_hex_hint": "hex color #",
+  "hue": "hue"
 }

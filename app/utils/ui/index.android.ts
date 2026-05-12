@@ -7,6 +7,8 @@ import { documentsService } from '~/services/documents';
 import { ocrService } from '~/services/ocr';
 import { securityService } from '~/services/security';
 import { copyOCRToClipboard, getOCRFromCamera, goToDocumentView, importAndScanImageOrPdfFromUris, importPKPassFromUris, onStartCam, requestStoragePermission } from './index.common';
+import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+import { screenHeightDips } from '@shared/variables';
 
 export * from './index.common';
 
@@ -159,39 +161,17 @@ export const onAndroidNewItent = throttle(async function onAndroidNewItent(event
 
 // TODO: move to a plugin
 export async function pickColor(color: Color | string, options: { alpha?: boolean; anchor?: View } = {}) {
-    return new Promise<Color>((resolve) => {
-        const activity = Application.android.startActivity;
-
-        const builder = new com.skydoves.colorpickerview.ColorPickerDialog.Builder(activity)
-            .setTitle(lc('pick_color'))
-            .attachAlphaSlideBar(options.alpha !== false)
-            .setPositiveButton(
-                lc('choose'),
-                new com.skydoves.colorpickerview.listeners.ColorListener({
-                    onColorSelected(color: number) {
-                        resolve(new Color(color));
-                    }
-                })
-            )
-            .setNegativeButton(
-                lc('cancel'),
-                new android.content.DialogInterface.OnClickListener({
-                    onClick(dialogInterface) {
-                        dialogInterface.dismiss();
-                        resolve(null);
-                    }
-                })
-            )
-            .setBottomSpace(12); // set a bottom space between the last slidebar and buttons.
-
-        if (color && !(color instanceof Color)) {
-            color = new Color(color as any);
+    const view = (await import('~/components/common/ColorPicker.svelte')).default;
+    return showBottomSheet({
+        view,
+        backgroundOpacity: 0.8,
+        skipCollapsedState: true,
+        props: {
+            color,
+            mode: 'spectrum',
+            height: screenHeightDips * 0.8,
+            alphaSupport: false
         }
-        if (color) {
-            builder.getColorPickerView().setInitialColor((color as Color).android);
-        }
-        const popup = builder.create();
-        popup.show();
     });
 }
 

@@ -74,6 +74,8 @@ try {
     registerNativeViewElement('AbsoluteLayout', () => require('@nativescript/core').AbsoluteLayout);
     registerNativeViewElement('wraplayout', () => require('@nativescript/core').WrapLayout);
     registerNativeViewElement('flexlayout', () => require('@nativescript/core').FlexboxLayout);
+    registerNativeViewElement('SegmentedBar', () => require('plugin-shared/SegmentedBar').SegmentedBar);
+    registerNativeViewElement('SegmentedBarItem', () => require('plugin-shared/SegmentedBar').SegmentedBarItem);
     registerElement('Frame', () => new FrameElement());
     registerElement('Page', () => new PageElement());
     registerNativeViewElement('GridLayout', () => require('@nativescript/core').GridLayout);

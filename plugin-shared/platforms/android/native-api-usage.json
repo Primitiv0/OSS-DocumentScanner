@@ -30,7 +30,9 @@
         "com.skydoves.colorpickerview:ColorPickerDialog.Builder",
         "com.skydoves.colorpickerview:ColorPickerView",
         "com.google.android.material.datepicker:MaterialDatePicker",
-        "com.google.android.material.datepicker:MaterialDatePicker.Builder"
+        "com.google.android.material.datepicker:MaterialDatePicker.Builder",
+        "com.google.android.material.button:MaterialButtonToggleGroup",
+        "com.google.android.material.button:MaterialButtonToggleGroup.OnButtonCheckedListener"
     ],
     "blacklist": [
         "android.widget:DatePicker",
