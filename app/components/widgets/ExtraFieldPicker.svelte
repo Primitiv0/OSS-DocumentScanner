@@ -26,7 +26,6 @@
 
     async function selectDate(e) {
         try {
-            DEV_LOG && console.log('selectDate', currentTime);
             if (currentType === ExtraFieldType.Date) {
                 const dayStart = currentTime.startOf('d');
                 const date = await pickDate(currentTime);
@@ -41,15 +40,50 @@
 
     async function selectType(event) {
         try {
-            DEV_LOG && console.log('selectType');
             // const OptionSelect = (await import('~/components/OptionSelect.svelte')).default;
             const options = Object.keys(ExtraFieldType).map((k) => ({ name: lc(ExtraFieldType[k]), id: k }));
-            DEV_LOG && console.log('options', options);
             await showPopoverMenu({
                 options,
                 anchor: event.object,
                 onClose: (item) => {
                     currentType = ExtraFieldType[item.id];
+                }
+            });
+        } catch (error) {
+            showError(error);
+        }
+    }
+    async function selecteTemplateName(event) {
+        try {
+            // const OptionSelect = (await import('~/components/OptionSelect.svelte')).default;
+            const options = [
+                {
+                    id: 'valid_from',
+                    name: lc('valid_from'),
+                    type: ExtraFieldType.Date
+                },
+                {
+                    id: 'expire_on',
+                    name: lc('expire_on'),
+                    type: ExtraFieldType.Date
+                },
+                {
+                    id: 'balance',
+                    name: lc('balance'),
+                    type: ExtraFieldType.Number
+                },
+                {
+                    id: 'notes',
+                    name: lc('notes'),
+                    type: ExtraFieldType.String
+                }
+            ];
+            await showPopoverMenu({
+                options,
+                anchor: event.object,
+                onClose: (item) => {
+                    currentName = item.name;
+                    currentType = item.type;
                 }
             });
         } catch (error) {
@@ -75,8 +109,12 @@
 
 <gesturerootview bind:this={rootView} padding={16} rows="auto,auto,auto,auto,auto">
     <label color={colorOnBackground} fontSize={20} fontWeight="bold" marginBottom={16} text={editing ? lc('edit_extra_field') : lc('add_extra_field')} />
-    <textfield editable={false} hint={lc('type')} margin={tMargin} row={1} text={lc(currentType)} textTransform="uppercase" variant="outline" on:tap={(e) => selectType(e)} />
-    <textfield hint={lc('name')} margin={tMargin} row={2} text={name} variant="outline" on:textChange={(e) => (currentName = e.value)} />
+    <gridlayout row={1}>
+        <textfield hint={lc('name')} margin={tMargin} paddingLeft={60} row={2} text={currentName} variant="outline" on:textChange={(e) => (currentName = e.value)} />
+        <mdbutton class="icon-btn" color={colorOnSurfaceVariant} horizontalAlignment="left" text="mdi-menu-down" variant="text" verticalAlignment="middle" on:tap={selecteTemplateName} />
+    </gridlayout>
+    <textfield editable={false} hint={lc('type')} margin={tMargin} row={2} text={lc(currentType)} textTransform="uppercase" variant="outline" on:tap={(e) => selectType(e)} />
+
     <textview
         editable={currentType !== ExtraFieldType.Date}
         hint={lc('value')}
@@ -86,5 +124,6 @@
         variant="outline"
         on:textChange={(e) => (currentValue = e.value)}
         on:tap={(e) => selectDate(e)} />
+
     <mdbutton horizontalAlignment="right" row={4} text={editing ? lc('edit') : lc('add')} variant="text" on:tap={add} />
 </gesturerootview>

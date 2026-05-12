@@ -42,7 +42,6 @@
             DEV_LOG && console.log('selectBarcodeFormat');
             // const OptionSelect = (await import('~/components/OptionSelect.svelte')).default;
             const options = Object.keys(FORMATS).map((k) => ({ name: lc(FORMATS[k]), id: k }));
-            DEV_LOG && console.log('options', options);
             await showPopoverMenu({
                 options,
                 anchor: event.object,

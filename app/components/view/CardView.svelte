@@ -100,6 +100,7 @@
     import SliderPopover from '../common/SliderPopover.svelte';
     import { TextField } from '@nativescript-community/ui-material-textfield';
     import { Label } from '@nativescript-community/ui-label';
+    import { EXTRA_PAPERLESS_ID_KEY } from '~/services/sync/paperless/PaperlessNgxPDFSyncService';
 
     let { colorBackground, colorError, colorOnBackground, colorOnSurfaceVariant, colorOutline, colorSurface, colorSurfaceContainerHigh, colorTertiary } = $colors;
     $: ({ colorBackground, colorError, colorOnBackground, colorOnSurfaceVariant, colorOutline, colorSurface, colorSurfaceContainerHigh, colorTertiary } = $colors);
@@ -197,7 +198,7 @@
         // }
         Object.keys(extra).forEach((k) => {
             // Skip the pkpass flag as it's already handled
-            if (k !== 'pkpass') {
+            if (k !== 'pkpass' && k !== EXTRA_PAPERLESS_ID_KEY) {
                 result.push({
                     name: k,
                     extra: { ...(extra[k] as any), name: k }

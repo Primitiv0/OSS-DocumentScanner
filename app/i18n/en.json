@@ -508,5 +508,9 @@
   "sliders": "slider",
   "select": "select",
   "color_hex_hint": "hex color #",
-  "hue": "hue"
+  "hue": "hue",
+  "notes": "notes",
+  "balance": "balance",
+  "expire_on": "expire on",
+  "valid_from": "valid from"
 }
