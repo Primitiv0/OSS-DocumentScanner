@@ -223,6 +223,10 @@ const config = {
                             {
                                 label: 'Sponsor',
                                 href: 'https://github.com/sponsors/farfromrefug'
+                            },
+                            {
+                                label: 'Open Collective',
+                                href: 'https://opencollective.com/oss-appscollective'
                             }
                         ]
                     },
