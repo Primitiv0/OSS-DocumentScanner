@@ -221,13 +221,17 @@ export async function handleRequestResponseError<U = any>(response: https.HttpsR
 
     if (Math.round(statusCode / 100) !== 2) {
         let content: U;
-        try {
-            content = await response.content.toJSONAsync();
-        } catch (err) {
-            // console.error(err, err.stack);
-        }
-        if (!content) {
-            content = (await response.content.toStringAsync()) as any;
+        if (response.contentLength) {
+            try {
+                content = await response.content.toJSONAsync();
+                // we dont catch the error as it might simply be "no response"
+            } catch (__) {}
+            if (!content) {
+                try {
+                    content = (await response.content.toStringAsync()) as any;
+                    // we dont catch the error as it might simply be "no response"
+                } catch (__) {}
+            }
         }
         const isJSON = typeof content === 'object' || Array.isArray(content);
         let jsonReturn;
