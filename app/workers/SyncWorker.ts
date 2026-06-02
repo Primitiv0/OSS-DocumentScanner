@@ -285,6 +285,24 @@ export default class SyncWorker extends BaseWorker {
         }
     }
 
+    private filterDocumentsBySyncFolders(service: BaseSyncService, documents: OCRDocument[]): OCRDocument[] {
+        if (!service.syncFolders?.length) {
+            return documents;
+        }
+        const folderSet = new Set(service.syncFolders);
+        // Documents not assigned to any folder are intentionally excluded when a folder filter is active.
+        return documents.filter((doc) => doc.folders?.some((folderId) => folderSet.has(folderId)));
+    }
+
+    private filterPagedDocumentsBySyncFolders<T extends { document: OCRDocument }>(service: BaseSyncService, documents: T[]): T[] {
+        if (!service.syncFolders?.length) {
+            return documents;
+        }
+        const folderSet = new Set(service.syncFolders);
+        // Documents not assigned to any folder are intentionally excluded when a folder filter is active.
+        return documents.filter((item) => item.document.folders?.some((folderId) => folderSet.has(folderId)));
+    }
+
     async syncDataDocuments({ bothWays = false, event, force = false, withFolders = false }: { withFolders?; force; bothWays; event: DocumentEvents }) {
         if (event && (event.eventName === EVENT_DOCUMENT_PAGES_ADDED || event.eventName === EVENT_DOCUMENT_PAGE_UPDATED || event.eventName === EVENT_DOCUMENT_PAGE_DELETED)) {
             // we ignore this event
@@ -313,6 +331,7 @@ export default class SyncWorker extends BaseWorker {
                     DEV_LOG && console.log('documentsToDeleteOnRemote', deleteKey, ApplicationSettings.getString(deleteKey, '[]'));
                     const documentsToDeleteOnRemote = this.uniqueDocumentIds(JSON.parse(ApplicationSettings.getString(deleteKey, '[]')));
                     let serviceLocalDocuments = localDocuments;
+                    serviceLocalDocuments = this.filterDocumentsBySyncFolders(service, serviceLocalDocuments);
                     DEV_LOG && console.log('syncDataDocuments', 'handling service', service.type, service.id, service.autoSync, force, JSON.stringify(documentsToDeleteOnRemote));
                     if (bothWays) {
                         await service.ensureRemoteFolder();
@@ -460,7 +479,7 @@ export default class SyncWorker extends BaseWorker {
                             }
                         }
                         // just test if we have local document marked as needing update
-                        const documentsToSyncLength = localDocuments.filter((d) => (d._synced & service.syncMask) === 0).concat(documentsToDeleteOnRemote as any[]).length;
+                        const documentsToSyncLength = serviceLocalDocuments.filter((d) => (d._synced & service.syncMask) === 0).concat(documentsToDeleteOnRemote as any[]).length;
                         if (documentsToSyncLength) {
                             await service.ensureRemoteFolder();
 
@@ -475,7 +494,7 @@ export default class SyncWorker extends BaseWorker {
                                 toBeAdded: missingLocalDocuments,
                                 toBeDeleted: missingRemoteDocuments,
                                 union: toBeSyncDocuments
-                            } = findArrayDiffs(localDocuments, remoteDocuments, (a, b) => a.id === b.basename);
+                            } = findArrayDiffs(serviceLocalDocuments, remoteDocuments, (a, b) => a.id === b.basename);
                             for (let index = missingLocalDocuments.length - 1; index >= 0; index--) {
                                 if (deletedDocumentIds.has(missingLocalDocuments[index].basename)) {
                                     missingLocalDocuments.splice(index, 1);
@@ -848,7 +867,7 @@ export default class SyncWorker extends BaseWorker {
                   ? [{ document: event['doc'] as OCRDocument, pages: [event['doc']['pages'][event['pageIndex']]] as OCRPage[] }]
                   : undefined
         )?.filter((d) => !!d.document);
-        const localDocuments = eventDocuments ?? (await documentsService.documentRepository.search()).map((d) => ({ document: d, pages: d.pages }));
+        const localDocuments = eventDocuments ?? (await documentsService.documentRepository.findDocuments()).map((d) => ({ document: d, pages: d.pages }));
 
         // this should not happened but i got bug reports with null document. cant reproduce
         DEV_LOG &&
@@ -877,7 +896,7 @@ export default class SyncWorker extends BaseWorker {
                     const deleteKey = getRemoteDeleteDocumentSettingsKey(service);
 
                     // just test if we have local document marked as needing update
-                    const documentsToSync = localDocuments.filter((d) => force || (d.document._synced & service.syncMask) === 0);
+                    const documentsToSync = this.filterPagedDocumentsBySyncFolders(service, localDocuments).filter((d) => force || (d.document._synced & service.syncMask) === 0);
                     // DEV_LOG && console.log('syncImageDocuments', 'documentsToSync', documentsToSync.length);
                     if (documentsToSync.length) {
                         await service.ensureRemoteFolder();
@@ -962,7 +981,7 @@ export default class SyncWorker extends BaseWorker {
         // in case of a full triggered sync we can filter non ocr paged to ocr as less as possible.
         // if the sync is triggered from page update or events like that we are forced to ocr
         const canFilterToOCR = force && eventDocuments === undefined;
-        const localDocuments = eventDocuments ?? (await documentsService.documentRepository.search()).map((d) => ({ document: d, pages: d.pages }));
+        const localDocuments = eventDocuments ?? (await documentsService.documentRepository.findDocuments()).map((d) => ({ document: d, pages: d.pages }));
 
         // this should not happened but i got bug reports with null document. cant reproduce
         DEV_LOG &&
@@ -987,7 +1006,7 @@ export default class SyncWorker extends BaseWorker {
                     }
                     const deleteKey = getRemoteDeleteDocumentSettingsKey(service);
                     // just test if we have local document marked as needing update
-                    const documentsToSync = localDocuments.filter((d) => force || (d.document._synced & service.syncMask) === 0);
+                    const documentsToSync = this.filterPagedDocumentsBySyncFolders(service, localDocuments).filter((d) => force || (d.document._synced & service.syncMask) === 0);
                     // DEV_LOG && console.log('syncImageDocuments', 'documentsToSync', documentsToSync.length);
                     if (documentsToSync.length) {
                         await service.ensureRemoteFolder();
